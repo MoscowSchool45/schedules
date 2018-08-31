@@ -1,0 +1,28 @@
+version: '2.2'
+
+services:
+    django:
+        build:
+            context: .
+            dockerfile: Dockerfile-django
+        ports:
+            - "8000:80"
+        volumes:
+            - "./schedules:/app"
+        environment:
+            - PYTHONUNBUFFERED=0
+        command: python manage.py runserver 0.0.0.0:80
+        entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+        #depends_on:
+        #    - postgres
+
+    postgres:
+        image: postgres:9.5
+        # ports:
+        #     - "5432:5432"
+        volumes:
+            - ".data/postgres:/var/lib/postgresql/data"
+        environment:
+            POSTGRES_USER: schedules
+            POSTGRES_PASSWORD: schedules
+
