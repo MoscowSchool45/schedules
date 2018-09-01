@@ -10,10 +10,14 @@ class Schedule(models.Model):
     def __str__(self):
         return "Расписние от " + self.date_effective.strftime("%D")
 
+    def entry_count(self):
+        return ScheduleEntry.objects.filter(section__in = self.scheduleentrysection_set.all()).count()
+    entry_count.short_description = "Количество записей"
+
     def load_from_file(self, file, cleanup=False):
         parser = BeautifulSoup(file, 'html.parser')
         if cleanup:
-            self.scheduleentrysection_set.delete()
+            self.scheduleentrysection_set.all().delete()
 
         if not parser.body:
             return False
@@ -33,7 +37,7 @@ class Schedule(models.Model):
 
 
 class ScheduleEntrySection(models.Model):
-    title = models.CharField(max_length=1024, verbose_name="Заголовок", unique=True)
+    title = models.CharField(max_length=1024, verbose_name="Заголовок")
     schedule = models.ForeignKey(Schedule, verbose_name="Расписание", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -42,10 +46,11 @@ class ScheduleEntrySection(models.Model):
     class Meta:
         verbose_name = "Раздел"
         verbose_name_plural = "Разделы"
+        unique_together = ('title', 'schedule')
 
 
 class ScheduleEntry(models.Model):
-    title = models.CharField(max_length=1024, verbose_name="Заголовок", unique=True)
+    title = models.CharField(max_length=1024, verbose_name="Заголовок")
     html = models.TextField(blank=True)
     section = models.ForeignKey(ScheduleEntrySection, verbose_name="Раздел", on_delete=models.CASCADE)
 
@@ -55,3 +60,4 @@ class ScheduleEntry(models.Model):
     class Meta:
         verbose_name = "Запись"
         verbose_name_plural = "Записи"
+        unique_together = ('title', 'section')
