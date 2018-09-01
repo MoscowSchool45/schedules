@@ -32,7 +32,7 @@ class ScheduleAdmin(nested_admin.NestedModelAdmin):
 
         urls = super().get_urls()
 
-        info = self.model._meta.app_label, self.model._meta.model_name
+        info = self.model._meta.app_label, self.model._meta.model_name  # pylint:disable=protected-access
 
         my_urls = [
             path(
