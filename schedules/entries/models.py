@@ -62,6 +62,7 @@ class ScheduleEntrySection(models.Model):
         verbose_name = "Раздел"
         verbose_name_plural = "Разделы"
         unique_together = ('title', 'schedule')
+        ordering = ("title", )
 
 
 class ScheduleEntry(models.Model):
@@ -80,3 +81,4 @@ class ScheduleEntry(models.Model):
         verbose_name = "Запись"
         verbose_name_plural = "Записи"
         unique_together = ('title', 'section')
+        ordering = ("title", )
