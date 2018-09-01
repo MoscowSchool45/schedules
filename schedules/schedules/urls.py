@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+admin.site.site_header = "Управление расписаниями"
+admin.site.site_title = "Управление расписаниями"
+admin.site.index_title = "Добро пожаловать в управление расписаниями"
+
 urlpatterns = [
     path('', include('entries.urls')),
     path('nested_admin/', include('nested_admin.urls')),

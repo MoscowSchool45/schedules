@@ -1,5 +1,6 @@
 from django.urls import path
-from entries.views import IndexView, EntryDetailView, ScheduleDetailView
+
+from entries.views import EntryDetailView, IndexView, ScheduleDetailView
 
 urlpatterns = [
     path('', IndexView.as_view(), name='entry-index'),

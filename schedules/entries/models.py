@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils import timezone, text
-
+from django.utils import text, timezone
 from unidecode import unidecode
 
 
