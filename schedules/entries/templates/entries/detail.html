@@ -1,0 +1,9 @@
+{% extends "entries/schedule.html" %}
+
+{% block detail %}
+<hr />
+<h3 class="text-center">{{entry.title}}</h3>
+<div class="well text-center schedule">
+    {{ entry.html|safe }}
+</div>
+{% endblock %}

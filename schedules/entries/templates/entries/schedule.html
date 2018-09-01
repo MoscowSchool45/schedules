@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% if archive|length > 1%}
+<button class="btn btn-primary float-right mt-2 mr-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Архив
+  </button>
+  {% endif %}
+<header class="text-center"><h1>{{current}}</h1>
+  {% if archive|length > 1%}
+
+<div class="collapse" id="collapseExample">
+  <div class="text-left">
+      <ul>
+      {% for schedule in archive %}
+          <li><a href="{% url 'entry-schedule-detail' schedule.slug schedule.pk %}">{{schedule}}</a></li>
+      {% endfor %}
+      </ul>
+
+  </div>
+</div>
+{% endif %}
+</header>
+<hr />
+{% for section in current.scheduleentrysection_set.all %}
+<section>
+    <h2>{{section.title}}</h2>
+    {% for entry in section.scheduleentry_set.all %}
+        <a href="{% url 'entry-entry-detail' current.slug current.pk entry.slug entry.pk %}">{{entry.title}}</a>
+    {% endfor %}
+</section>
+{% endfor %}
+
+{% block detail %}{% endblock %}
+
+{% endblock %}

@@ -1,14 +1,28 @@
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils import timezone
+from django.utils import timezone, text
+
+from unidecode import unidecode
 
 
 class Schedule(models.Model):
     date_effective = models.DateField(default=timezone.now, verbose_name="Дата начала действия")
     published = models.BooleanField(verbose_name="Опубликовано")
 
+    @property
+    def slug(self):
+        return text.slugify(self.date_effective.strftime("%d%m%y"))
+
     def __str__(self):
-        return "Расписние от " + self.date_effective.strftime("%D")
+        return "Расписание от " + self.date_effective.strftime("%d/%m/%y")
+
+    @classmethod
+    def active(cls):
+        return cls.archive().first()
+
+    @classmethod
+    def archive(cls):
+        return cls.objects.filter(published=True)
 
     def entry_count(self):
         return ScheduleEntry.objects.filter(section__in = self.scheduleentrysection_set.all()).count()
@@ -34,6 +48,7 @@ class Schedule(models.Model):
     class Meta:
         verbose_name = "Расписнаие"
         verbose_name_plural = "Расписания"
+        ordering = ("-date_effective", )
 
 
 class ScheduleEntrySection(models.Model):
@@ -52,7 +67,11 @@ class ScheduleEntrySection(models.Model):
 class ScheduleEntry(models.Model):
     title = models.CharField(max_length=1024, verbose_name="Заголовок")
     html = models.TextField(blank=True)
-    section = models.ForeignKey(ScheduleEntrySection, verbose_name="Раздел", on_delete=models.CASCADE)
+    section = models.ForeignKey(ScheduleEntrySection, verbose_name="Раздел", on_delete=models.CASCADE)\
+
+    @property
+    def slug(self):
+        return text.slugify(unidecode(self.title))
 
     def __str__(self):
         return self.title

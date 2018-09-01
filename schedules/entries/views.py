@@ -1,14 +1,15 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 from entries.forms import ScheduleAddForm
-from entries.models import Schedule
+from entries.models import Schedule, ScheduleEntry
 
 
 class ChronobusUploadView(FormView, UserPassesTestMixin):
-    template_name = 'chronobus_upload.html'
+    template_name = 'entries/chronobus_upload.html'
     form_class = ScheduleAddForm
     success_url = reverse_lazy('admin:entries_schedule_changelist')
 
@@ -43,3 +44,50 @@ class ChronobusUploadView(FormView, UserPassesTestMixin):
             'add': False,
         })
         return super().render_to_response(context, **response_kwargs)
+
+
+class IndexView(TemplateView):
+    template_name = "entries/schedule.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update({
+            'active': Schedule.active(),
+            'current': Schedule.active(),
+            'archive': Schedule.archive(),
+        })
+        return context
+
+
+class ScheduleDetailView(TemplateView):
+    template_name = "entries/schedule.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current = get_object_or_404(Schedule, pk=self.kwargs['sched_pk'])
+
+        context.update({
+            'active': Schedule.active(),
+            'current': current,
+            'archive': Schedule.archive(),
+        })
+        return context
+
+
+class EntryDetailView(TemplateView):
+    template_name = "entries/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current = get_object_or_404(Schedule, pk=self.kwargs['sched_pk'])
+        entry = get_object_or_404(ScheduleEntry, pk=self.kwargs['pk'])
+
+        context.update({
+            'active': Schedule.active(),
+            'current': current,
+            'archive': Schedule.archive(),
+
+            'entry': entry,
+        })
+        return context
