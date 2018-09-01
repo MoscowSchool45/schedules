@@ -8,3 +8,4 @@ application and exported to HTML.
 - Clone the repository
 - Copy `schedules/settings.example.py` to `schedules/settings.py` and make changes if necessary
 - Run with `docker-compose up`
+- Do migrations with `make migrate`

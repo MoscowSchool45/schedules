@@ -29,7 +29,7 @@ class ChronobusUploadView(FormView, UserPassesTestMixin):
 
     def render_to_response(self, context, **response_kwargs):
         context.update({'test': 'test',
-            'opts': ScheduleAddForm.Meta.model._meta,
+            'opts': ScheduleAddForm.Meta.model._meta,   # pylint:disable=protected-access
             'change': True,
             'is_popup': False,
             'save_as': False,
