@@ -1,0 +1,57 @@
+from bs4 import BeautifulSoup
+from django.db import models
+from django.utils import timezone
+
+
+class Schedule(models.Model):
+    date_effective = models.DateField(default=timezone.now, verbose_name="Дата начала действия")
+    published = models.BooleanField(verbose_name="Опубликовано")
+
+    def __str__(self):
+        return "Расписние от " + self.date_effective.strftime("%D")
+
+    def load_from_file(self, file, cleanup=False):
+        parser = BeautifulSoup(file, 'html.parser')
+        if cleanup:
+            self.scheduleentrysection_set.delete()
+
+        if not parser.body:
+            return False
+        section_title = parser.title.get_text() or parser.body.title.get_text() or "Иное"
+        entries = parser.body.find_all('table', recursive=False)
+        section, _ = self.scheduleentrysection_set.get_or_create(title=section_title)
+        for entry_table in entries:
+            entry_title = entry_table.caption.get_text() or "Иное"
+            entry, _ = section.scheduleentry_set.get_or_create(title=entry_title)
+            entry.html = entry_table.prettify()
+            entry.save()
+        return True
+
+    class Meta:
+        verbose_name = "Расписнаие"
+        verbose_name_plural = "Расписания"
+
+
+class ScheduleEntrySection(models.Model):
+    title = models.CharField(max_length=1024, verbose_name="Заголовок", unique=True)
+    schedule = models.ForeignKey(Schedule, verbose_name="Расписание", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.schedule} - {self.title} ({self.scheduleentry_set.count()})"
+
+    class Meta:
+        verbose_name = "Раздел"
+        verbose_name_plural = "Разделы"
+
+
+class ScheduleEntry(models.Model):
+    title = models.CharField(max_length=1024, verbose_name="Заголовок", unique=True)
+    html = models.TextField(blank=True)
+    section = models.ForeignKey(ScheduleEntrySection, verbose_name="Раздел", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Запись"
+        verbose_name_plural = "Записи"
