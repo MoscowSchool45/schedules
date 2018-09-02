@@ -52,7 +52,7 @@ isort-fix:
 	docker-compose run --rm django isort --recursive -p .
 
 test:
-    @echo "$(CYAN)Running automated tests$(COFF)"
+	@echo "$(CYAN)Running automated tests$(COFF)"
 	docker-compose run --rm django python manage.py test
 
 quality: prospector isort
