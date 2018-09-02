@@ -13,7 +13,6 @@ env:
 before_install:
   - cp schedules/schedules/settings.test.py schedules/schedules/settings.py
   - docker-compose build
-  - docker-compose up
 
 script:
   - make check
