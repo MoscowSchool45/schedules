@@ -7,8 +7,13 @@ language: python
 
 python: 3.6
 
+env:
+  - DJANGO_SECRET_KEY="d#g@epy9!-%%5rgdx&mlff961l!_@ihuwqa#@di$)cqdi@2=3y"
+
 before_install:
+  - cp schedules/schedules/settings.test.py schedules/schedules/settings.py
   - docker-compose build
+  - docker-compose up
 
 script:
-  - make quality
+  - make check

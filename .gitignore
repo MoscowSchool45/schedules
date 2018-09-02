@@ -3,4 +3,4 @@ venv
 .idea/
 .data/
 schedules/db.sqlite3
-schedules/settings.py
+schedules/schedules/settings.py
