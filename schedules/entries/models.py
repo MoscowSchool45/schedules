@@ -28,7 +28,7 @@ class Schedule(models.Model):
     entry_count.short_description = "Количество записей"
 
     def load_from_file(self, file, cleanup=False):
-        parser = BeautifulSoup(file, 'html.parser')
+        parser = BeautifulSoup(file.read().decode('windows-1251'), 'html.parser')
         if cleanup:
             self.scheduleentrysection_set.all().delete()
 
