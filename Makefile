@@ -9,7 +9,7 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 # Mark non-file targets as PHONY
-.PHONY: all help shell makemigrations migrate isort isort-fix prospector quality
+.PHONY: all help shell makemigrations migrate isort isort-fix prospector test quality check
 all: help
 
 help:
@@ -24,6 +24,8 @@ help:
 	@echo "$(CYAN)make isort$(COFF)     - Check imports"
 	@echo ""
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
+	@echo ""
+	@echo "$(CYAN)make test$(COFF)      - Run automated tests"
 	@echo ""
 	@echo "$(CYAN)make quality$(COFF)   - Check code quality"
 	@echo ""
@@ -45,9 +47,14 @@ isort:
 	@echo "$(CYAN)Checking imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive --check-only -p . --diff
 
-
 isort-fix:
 	@echo "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
+test:
+	@echo "$(CYAN)Running automated tests$(COFF)"
+	docker-compose run --rm django python manage.py test
+
 quality: prospector isort
+
+check: prospector isort test
